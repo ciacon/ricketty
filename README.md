@@ -14,4 +14,4 @@ uv run ruff check .
 uv run pyright
 ```
 
-The first vertical slice deliberately concentrates on cancellable, slow ticker output. Dashboard panels and network-fed status ingestion arrive later.
+The first vertical slice deliberately concentrates on cancellable, slow ticker output. Its deterministic boot sequence probes tube integrity (without asking the tubes whether they consented) before bringing the terminal online. Dashboard panels and network-fed status ingestion arrive later.

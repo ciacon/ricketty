@@ -1,8 +1,9 @@
+import asyncio
 from collections.abc import Callable
 
 import pytest
 
-from ricketty.services.typer import reveal
+from ricketty.services.typer import Ticker, reveal
 
 
 @pytest.mark.asyncio
@@ -27,3 +28,22 @@ async def test_reveal_waits_only_between_successive_prefixes() -> None:
 
     assert seen == ["O", "OK"]
     assert delays == [0.25]
+
+
+@pytest.mark.asyncio
+async def test_ticker_replaces_an_unfinished_message() -> None:
+    seen: list[str] = []
+    release_glyphs = asyncio.Event()
+
+    async def wait_for_release(_: float) -> None:
+        await release_glyphs.wait()
+
+    ticker = Ticker(write=seen.append, delay_seconds=1, sleep=wait_for_release)
+
+    ticker.show("OLD")
+    await asyncio.sleep(0)
+    ticker.show("NEW")
+    release_glyphs.set()
+    await ticker.wait_until_idle()
+
+    assert seen == ["O", "N", "NE", "NEW"]
