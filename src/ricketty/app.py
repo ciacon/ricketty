@@ -1,5 +1,7 @@
 """The first Ricketty terminal application."""
 
+import asyncio
+
 from textual.app import App, ComposeResult
 from textual.widgets import Static
 
@@ -11,6 +13,7 @@ DEFAULT_BOOT_MESSAGES = (
     "TUBES: MOSTLY PRESENT",
     "RICKETTY TERMINAL ONLINE",
 )
+DEFAULT_MESSAGE_PAUSE_SECONDS = 1.5
 
 
 class RickettyApp(App[None]):
@@ -24,10 +27,12 @@ class RickettyApp(App[None]):
         *,
         boot_messages: tuple[str, ...] = DEFAULT_BOOT_MESSAGES,
         glyph_delay_seconds: float = 0.04,
+        message_pause_seconds: float = DEFAULT_MESSAGE_PAUSE_SECONDS,
     ) -> None:
         super().__init__()
         self._boot_messages = boot_messages
         self._glyph_delay_seconds = glyph_delay_seconds
+        self._message_pause_seconds = message_pause_seconds
 
     def compose(self) -> ComposeResult:
         yield Static("", id="ticker")
@@ -41,6 +46,9 @@ class RickettyApp(App[None]):
             write=ticker.update,
             delay_seconds=self._glyph_delay_seconds,
         )
-        for message in self._boot_messages:
+        last_message_index = len(self._boot_messages) - 1
+        for index, message in enumerate(self._boot_messages):
             boot_ticker.show(message)
             await boot_ticker.wait_until_idle()
+            if index < last_message_index and self._message_pause_seconds > 0:
+                await asyncio.sleep(self._message_pause_seconds)

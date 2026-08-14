@@ -6,7 +6,11 @@ from ricketty.app import RickettyApp
 
 @pytest.mark.asyncio
 async def test_app_reveals_its_boot_message_in_the_ticker() -> None:
-    app = RickettyApp(boot_messages=("RICKETTY READY",), glyph_delay_seconds=0)
+    app = RickettyApp(
+        boot_messages=("RICKETTY READY",),
+        glyph_delay_seconds=0,
+        message_pause_seconds=0,
+    )
 
     async with app.run_test() as pilot:
         await pilot.pause()
@@ -18,7 +22,9 @@ async def test_app_reveals_its_boot_message_in_the_ticker() -> None:
 @pytest.mark.asyncio
 async def test_app_reveals_each_boot_message_in_order() -> None:
     app = RickettyApp(
-        boot_messages=("CHECKING TUBES", "TUBES: MOSTLY PRESENT"), glyph_delay_seconds=0
+        boot_messages=("CHECKING TUBES", "TUBES: MOSTLY PRESENT"),
+        glyph_delay_seconds=0,
+        message_pause_seconds=0,
     )
 
     async with app.run_test() as pilot:
@@ -26,3 +32,18 @@ async def test_app_reveals_each_boot_message_in_order() -> None:
 
         ticker = app.query_one("#ticker", Static)
         assert str(ticker.render()) == "TUBES: MOSTLY PRESENT"
+
+
+@pytest.mark.asyncio
+async def test_app_holds_a_completed_message_before_showing_the_next_one() -> None:
+    app = RickettyApp(
+        boot_messages=("CHECKING TUBES", "TUBES: MOSTLY PRESENT"),
+        glyph_delay_seconds=0,
+        message_pause_seconds=60,
+    )
+
+    async with app.run_test() as pilot:
+        await pilot.pause()
+
+        ticker = app.query_one("#ticker", Static)
+        assert str(ticker.render()) == "CHECKING TUBES"
