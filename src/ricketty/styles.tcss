@@ -1,0 +1,13 @@
+Screen {
+    align: center middle;
+    background: #071006;
+    color: #70ff70;
+}
+
+#ticker {
+    width: 1fr;
+    height: auto;
+    padding: 1 2;
+    border: heavy #3b8f3b;
+    content-align: center middle;
+}
