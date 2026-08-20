@@ -1,13 +1,19 @@
 Screen {
-    align: center middle;
+    layout: grid;
+    grid-size: 2 3;
+    grid-gutter: 1;
     background: #071006;
     color: #70ff70;
+    padding: 1;
+}
+
+#clock, #system, #bulletins, #event-log, #ticker {
+    height: 1fr;
+    padding: 1 2;
+    border: heavy #3b8f3b;
 }
 
 #ticker {
-    width: 1fr;
-    height: auto;
-    padding: 1 2;
-    border: heavy #3b8f3b;
+    column-span: 2;
     content-align: center middle;
 }

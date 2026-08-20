@@ -1,10 +1,17 @@
 """Deterministic local bulletin source."""
 
+import time
 from collections.abc import Callable
 from datetime import datetime
 
 from ricketty.models import Severity, StatusSnapshot
 from ricketty.providers.base import ProviderIdentity
+
+DEFAULT_BULLETINS = (
+    "RADIO: RECEIVING VIBES",
+    "TUBES: MOSTLY PRESENT",
+    "COFFEE LEVEL: THEORETICAL",
+)
 
 
 class BulletinProvider:
@@ -15,9 +22,9 @@ class BulletinProvider:
     def __init__(
         self,
         *,
-        bulletins: tuple[str, ...],
-        now: Callable[[], datetime],
-        monotonic: Callable[[], float],
+        bulletins: tuple[str, ...] = DEFAULT_BULLETINS,
+        now: Callable[[], datetime] = lambda: datetime.now().astimezone(),
+        monotonic: Callable[[], float] = time.monotonic,
     ) -> None:
         self._bulletins = bulletins
         self._now = now
